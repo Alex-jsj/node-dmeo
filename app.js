@@ -1,38 +1,27 @@
-const http = require("http");
-const querystring = require("querystring");
+const handleBlogRouter = require("./src/router/blog");
+const handleUserRouter = require("./src/router/user");
 
-const server = http.createServer((req, res) => {
-  const method = req.method;
-  const url = req.url;
-  const path = url.split("?")[0];
-  const query = querystring.parse(url.split("?")[1]);
-
+const serverHandle = (req, res) => {
   // 设置返回格式
-  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Content-type", "application/json");
 
-  // 返回数据
-  const resData = {
-    method,
-    url,
-    path,
-    query
-  };
-
-  //返回
-  if (method === "GET") {
-    res.end(JSON.stringify(resData));
+  // 处理blog路由
+  const blogData = handleBlogRouter(req, res);
+  if (blogData) {
+    res.end(JSON.stringify(blogData));
+    return;
   }
-  if (method === "POST") {
-    let postData = "";
-    req.on("data", chunk => {
-      postData += chunk.toString();
-    });
-    req.on("end", () => {
-      resData.postData = postData;
-      res.end(JSON.stringify(resData));
-    });
+  // 处理user路由
+  const userData = handleUserRouter(req, res);
+  if (userData) {
+    res.end(JSON.stringify(userData));
+    return;
   }
-});
 
-server.listen(3000);
-console.log("3000 OK!");
+  // 404
+  res.writeHead(404, { "Content-type": "text/plain" });
+  res.write("404 Not Found!");
+  res.end();
+};
+
+module.exports = setHeader;
