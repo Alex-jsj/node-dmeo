@@ -24,4 +24,4 @@ const serverHandle = (req, res) => {
   res.end();
 };
 
-module.exports = setHeader;
+module.exports = serverHandle;
